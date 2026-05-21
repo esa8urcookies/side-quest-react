@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Additional global styles for Side Quest V2 */
 * {
   box-sizing: border-box;
