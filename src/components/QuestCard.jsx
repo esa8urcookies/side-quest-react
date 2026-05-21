@@ -1,112 +1,101 @@
 import React from 'react'
-import { CATEGORIES, CATEGORY_STYLES } from '../data/quests'
-import { usePlayer } from '../context/PlayerContext'
+import { useApp } from '../context/AppContext'
 
-function Stars({ difficulty }) {
+const DIFFICULTY_LABELS = ['', 'Easy', 'Easy', 'Medium', 'Hard', 'Epic']
+const DIFFICULTY_COLORS = ['', 'text-green-400', 'text-green-400', 'text-amber-400', 'text-orange-400', 'text-red-400']
+const DIFFICULTY_BG = ['', 'bg-green-900/40 border-green-700/50', 'bg-green-900/40 border-green-700/50', 'bg-amber-900/40 border-amber-700/50', 'bg-orange-900/40 border-orange-700/50', 'bg-red-900/40 border-red-700/50']
+
+function DifficultyStars({ count }) {
   return (
-    <span className="text-base leading-none" title={`Difficulty: ${difficulty}/5`}>
-      {Array.from({ length: 5 }, (_, i) => (
-        <span key={i} className={i < difficulty ? 'star-filled' : 'star-empty'}>
-          {i < difficulty ? '★' : '☆'}
-        </span>
+    <span className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map(i => (
+        <span key={i} className={i <= count ? 'diff-star' : 'diff-star empty'}>★</span>
       ))}
     </span>
   )
 }
 
 export default function QuestCard({ quest }) {
-  const { id, title, description, category, difficulty, xp, xpReward } = quest
-  const xpValue = xp ?? xpReward ?? 0
+  const { state, dispatch } = useApp()
+  const { activeQuests, completedQuests } = state
 
-  const { activeQuests, completedQuests, acceptQuest, abandonQuest, completeQuest } = usePlayer()
+  const isActive = activeQuests.includes(quest.id)
+  const isCompleted = completedQuests.some(c => c.id === quest.id)
 
-  const isActive = activeQuests.includes(id)
-  const isDone = completedQuests.includes(id)
+  function handleAccept() {
+    if (!isActive && !isCompleted) {
+      dispatch({ type: 'ACCEPT_QUEST', payload: { questId: quest.id } })
+    }
+  }
 
-  const cat = CATEGORIES[category] ?? CATEGORIES['random']
-  const styles = CATEGORY_STYLES[category] ?? CATEGORY_STYLES['random']
+  function handleComplete() {
+    if (isActive && !isCompleted) {
+      dispatch({ type: 'COMPLETE_QUEST', payload: { questId: quest.id, xpReward: quest.xp } })
+    }
+  }
 
-  const cardBase = [
-    'group relative flex flex-col bg-slate-800/80 border rounded-xl p-5 transition-all duration-300',
-    styles.border,
-    styles.glow,
-    isDone ? 'opacity-60' : '',
-  ].filter(Boolean).join(' ')
+  const diffColor = DIFFICULTY_COLORS[quest.difficulty] || 'text-slate-400'
+  const diffBg = DIFFICULTY_BG[quest.difficulty] || ''
 
   return (
-    <article className={cardBase}>
-      {/* Completed overlay ribbon */}
-      {isDone && (
-        <div className="absolute top-3 right-3 bg-green-600/80 text-green-100 text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-          <span>✓</span> Done
+    <div className={`quest-card bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-col gap-3 ${isCompleted ? 'completed' : ''}`}>
+      {/* Top Row */}
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-2xl flex-shrink-0">{quest.category}</span>
+          <div className="min-w-0">
+            <h3 className={`font-bold text-sm leading-tight ${isCompleted ? 'line-through text-slate-500' : 'text-slate-100'}`}>
+              {quest.title}
+            </h3>
+            <div className="flex items-center gap-2 mt-0.5">
+              <DifficultyStars count={quest.difficulty} />
+              <span className={`text-xs font-semibold ${diffColor}`}>{DIFFICULTY_LABELS[quest.difficulty]}</span>
+            </div>
+          </div>
         </div>
-      )}
-
-      {/* Active indicator */}
-      {isActive && !isDone && (
-        <div className="absolute top-3 right-3 bg-violet-600/80 text-violet-100 text-xs font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
-          <span className="animate-pulse">◉</span> Active
-        </div>
-      )}
-
-      {/* Category badge */}
-      <div className="flex items-center gap-2 mb-3">
-        <span
-          className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border ${styles.badge}`}
-        >
-          <span>{cat.emoji}</span>
-          <span>{cat.label}</span>
-        </span>
+        {isCompleted ? (
+          <div className="completed-badge flex-shrink-0">✓</div>
+        ) : (
+          <div className={`flex-shrink-0 border rounded-lg px-2 py-1 text-xs font-bold ${diffBg} ${diffColor}`}>
+            +{quest.xp} XP
+          </div>
+        )}
       </div>
-
-      {/* Title */}
-      <h3 className={`font-bold text-base text-white mb-2 leading-snug group-hover:${styles.accent} transition-colors`}>
-        {title}
-      </h3>
 
       {/* Description */}
-      <p className="text-sm text-slate-400 leading-relaxed flex-1 mb-4">
-        {description}
+      <p className="text-slate-400 text-xs leading-relaxed">
+        {quest.description}
       </p>
 
-      {/* Difficulty + XP */}
-      <div className="flex items-center justify-between mb-4">
-        <Stars difficulty={difficulty} />
-        <span className="flex items-center gap-1 text-sm font-bold text-amber-400">
-          <span>✦</span>
-          <span>{xpValue} XP</span>
-        </span>
-      </div>
-
-      {/* Action button */}
-      {isDone ? (
-        <div className={`w-full text-center text-sm font-semibold py-2 rounded-lg border ${styles.complete}`}>
-          Quest Completed!
+      {/* Buttons */}
+      {!isCompleted && (
+        <div className="flex gap-2 mt-auto">
+          {!isActive ? (
+            <button
+              onClick={handleAccept}
+              className="flex-1 bg-slate-700 hover:bg-amber-600/20 border border-slate-600 hover:border-amber-500 text-slate-300 hover:text-amber-300 text-xs font-semibold py-2 px-3 rounded-lg transition-all duration-150"
+            >
+              Accept Quest
+            </button>
+          ) : (
+            <>
+              <span className="flex-1 bg-amber-900/20 border border-amber-700/40 text-amber-500 text-xs font-semibold py-2 px-3 rounded-lg text-center">
+                Active ⚡
+              </span>
+              <button
+                onClick={handleComplete}
+                className="flex-1 bg-green-700/80 hover:bg-green-600 border border-green-600 text-white text-xs font-bold py-2 px-3 rounded-lg transition-all duration-150"
+              >
+                Complete ✓
+              </button>
+            </>
+          )}
         </div>
-      ) : isActive ? (
-        <div className="flex gap-2">
-          <button
-            onClick={() => completeQuest(id)}
-            className="flex-1 text-sm font-bold py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white transition-colors flex items-center justify-center gap-1.5"
-          >
-            <span>⚡</span> Complete
-          </button>
-          <button
-            onClick={() => abandonQuest(id)}
-            className="px-3 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white transition-colors text-sm"
-            title="Abandon quest"
-          >
-            ✕
-          </button>
-        </div>
-      ) : (
-        <button
-          onClick={() => acceptQuest(id)}
-          className={`w-full text-sm font-bold py-2 rounded-lg text-white transition-all duration-200 ${styles.button} active:scale-95`}
-        >
-          Accept Quest
-        </button>
       )}
-    </article>
+
+      {isCompleted && (
+        <div className="text-center text-xs text-slate-500 italic">Quest Completed!</div>
+      )}
+    </div>
   )
 }

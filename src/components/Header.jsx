@@ -1,125 +1,88 @@
-import React, { useState } from 'react'
-import { usePlayer } from '../context/PlayerContext'
+import React from 'react'
+import { useApp } from '../context/AppContext'
+import { calculateLevel, xpForLevel } from '../context/AppContext'
 
-export default function Header() {
-  const {
-    playerName,
-    level,
-    xp,
-    xpToNextLevel,
-    xpPercent,
-    completedQuests,
-    activeQuests,
-    setPlayerName,
-    MAX_LEVEL,
-  } = usePlayer()
+export default function Header({ currentPage, onNavigate }) {
+  const { state } = useApp()
+  const { playerName, xp, level, rpgClass } = state
 
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState(playerName)
+  const { remainingXp, xpNeeded } = calculateLevel(xp)
+  const xpPercent = Math.min(100, Math.round((remainingXp / xpNeeded) * 100))
 
-  function handleNameSubmit(e) {
-    e.preventDefault()
-    const trimmed = draft.trim()
-    if (trimmed) setPlayerName(trimmed)
-    setEditing(false)
-  }
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard' },
+    { id: 'leaderboard', label: 'Leaderboard' },
+    { id: 'profile', label: 'Profile' },
+  ]
 
   return (
-    <header className="sticky top-0 z-40 bg-navy-950/95 backdrop-blur border-b border-slate-700/50 shadow-2xl">
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        {/* Top row */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
-          {/* Logo */}
-          <div className="flex items-center gap-3 shrink-0">
-            <span className="text-3xl leading-none">⚔️</span>
-            <div>
-              <h1 className="text-xl font-bold gold-shimmer leading-none">Side Quest</h1>
-              <p className="text-xs text-slate-500 mt-0.5">RPG Quest Board</p>
-            </div>
-          </div>
+    <header className="sticky top-0 z-40 bg-slate-900/95 border-b border-slate-700 backdrop-blur-sm">
+      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
+        {/* Logo */}
+        <button
+          onClick={() => onNavigate('dashboard')}
+          className="flex items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity"
+        >
+          <span className="text-xl">⚔️</span>
+          <span className="font-black text-base text-slate-100 tracking-wide">Side Quest</span>
+          <span className="bg-amber-500 text-slate-900 text-[10px] font-black px-1.5 py-0.5 rounded-md leading-none">V2</span>
+        </button>
 
-          {/* Player info */}
-          <div className="flex items-center gap-4 flex-1 justify-end flex-wrap">
-            {/* Stats */}
-            <div className="flex items-center gap-3 text-sm text-slate-400">
-              <span className="flex items-center gap-1">
-                <span className="text-amber-400">✓</span>
-                <span>{completedQuests.length} completed</span>
-              </span>
-              <span className="text-slate-600">|</span>
-              <span className="flex items-center gap-1">
-                <span className="text-violet-400">◈</span>
-                <span>{activeQuests.length} active</span>
-              </span>
-            </div>
-
-            {/* Player name */}
-            <div className="flex items-center gap-2">
-              {editing ? (
-                <form onSubmit={handleNameSubmit} className="flex items-center gap-2">
-                  <input
-                    autoFocus
-                    value={draft}
-                    onChange={(e) => setDraft(e.target.value)}
-                    maxLength={24}
-                    className="bg-slate-800 border border-amber-500/50 rounded px-2 py-1 text-sm text-white focus:outline-none focus:ring-1 focus:ring-amber-500 w-36"
-                    onBlur={handleNameSubmit}
-                  />
-                </form>
-              ) : (
-                <button
-                  onClick={() => { setDraft(playerName); setEditing(true) }}
-                  className="text-sm font-semibold text-amber-300 hover:text-amber-200 transition-colors group flex items-center gap-1"
-                  title="Click to rename"
-                >
-                  🧙 {playerName}
-                  <span className="text-xs text-slate-600 group-hover:text-slate-400 transition-colors">✎</span>
-                </button>
-              )}
-            </div>
-
-            {/* Level badge */}
-            <div className="flex items-center gap-2 bg-violet-900/40 border border-violet-700/40 rounded-lg px-3 py-1.5">
-              <span className="text-xs text-violet-400 font-medium uppercase tracking-wider">Level</span>
-              <span className="text-lg font-bold text-white leading-none">{level}</span>
-              {level >= MAX_LEVEL && (
-                <span className="text-xs text-amber-400 font-bold">MAX</span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* XP Bar */}
-        <div className="mt-3">
-          <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-            <span className="text-amber-500/80 font-medium">
-              {level >= MAX_LEVEL ? '— MAX LEVEL —' : `${xp} / ${xpToNextLevel} XP`}
-            </span>
-            <span>
-              {level >= MAX_LEVEL ? '⭐ Legend' : `${xpPercent}% to level ${level + 1}`}
-            </span>
-          </div>
-          <div className="h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
-            <div
-              className="xp-bar-fill h-full rounded-full relative overflow-hidden"
-              style={{
-                width: `${xpPercent}%`,
-                background: 'linear-gradient(90deg, #d97706, #f59e0b, #fcd34d)',
-                boxShadow: '0 0 8px rgba(245,158,11,0.6)',
-              }}
+        {/* Nav Links */}
+        <nav className="hidden sm:flex items-center gap-1">
+          {navItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => onNavigate(item.id)}
+              className={`px-3 py-1.5 text-sm font-semibold rounded-lg transition-all duration-150 ${
+                currentPage === item.id
+                  ? 'nav-link-active text-amber-400 bg-amber-500/10'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
             >
-              {/* shimmer overlay */}
+              {item.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* XP Bar + Level */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {rpgClass && (
+            <span className="text-lg hidden sm:block">{rpgClass.emoji}</span>
+          )}
+          <div className="flex flex-col items-end gap-0.5">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-slate-400 hidden sm:block truncate max-w-[80px]">{playerName}</span>
+              <span className="bg-amber-500 text-slate-900 text-[11px] font-black px-2 py-0.5 rounded-full leading-none">
+                Lv.{level}
+              </span>
+            </div>
+            <div className="w-28 sm:w-32 bg-slate-700 rounded-full h-1.5 overflow-hidden">
               <div
-                className="absolute inset-0 opacity-50"
-                style={{
-                  background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
-                  animation: 'shimmer 1.5s linear infinite',
-                  backgroundSize: '200% 100%',
-                }}
+                className="xp-bar-fill h-full rounded-full"
+                style={{ width: `${xpPercent}%` }}
               />
             </div>
+            <span className="text-[10px] text-slate-500 font-mono">{remainingXp}/{xpNeeded} XP</span>
           </div>
         </div>
+      </div>
+
+      {/* Mobile Nav */}
+      <div className="sm:hidden border-t border-slate-800 flex">
+        {navItems.map(item => (
+          <button
+            key={item.id}
+            onClick={() => onNavigate(item.id)}
+            className={`flex-1 py-2 text-xs font-semibold transition-all ${
+              currentPage === item.id
+                ? 'text-amber-400 bg-amber-500/10 border-b-2 border-amber-500'
+                : 'text-slate-500 hover:text-slate-300'
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
       </div>
     </header>
   )

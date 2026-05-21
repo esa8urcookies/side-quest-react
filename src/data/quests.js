@@ -1,164 +1,242 @@
-export const CATEGORIES = {
-  adventure: { label: 'Adventure', emoji: '🗺️', color: 'orange' },
-  social:    { label: 'Social',    emoji: '🤝', color: 'pink' },
-  creative:  { label: 'Creative',  emoji: '🎨', color: 'purple' },
-  physical:  { label: 'Physical',  emoji: '💪', color: 'green' },
-  mental:    { label: 'Mental',    emoji: '🧠', color: 'cyan' },
-  random:    { label: 'Random',    emoji: '🎲', color: 'yellow' },
-}
+// =====================================================
+// Quest Data — pools for daily / weekly / monthly
+// =====================================================
 
-export const CATEGORY_STYLES = {
-  adventure: {
-    badge: 'bg-orange-900/60 text-orange-300 border-orange-700/50',
-    border: 'border-orange-700/30',
-    glow: 'quest-card-adventure',
-    accent: 'text-orange-400',
-    button: 'bg-orange-600 hover:bg-orange-500',
-    complete: 'bg-orange-700/30 border-orange-600/50 text-orange-300',
-  },
-  social: {
-    badge: 'bg-pink-900/60 text-pink-300 border-pink-700/50',
-    border: 'border-pink-700/30',
-    glow: 'quest-card-social',
-    accent: 'text-pink-400',
-    button: 'bg-pink-600 hover:bg-pink-500',
-    complete: 'bg-pink-700/30 border-pink-600/50 text-pink-300',
-  },
-  creative: {
-    badge: 'bg-purple-900/60 text-purple-300 border-purple-700/50',
-    border: 'border-purple-700/30',
-    glow: 'quest-card-creative',
-    accent: 'text-purple-400',
-    button: 'bg-purple-600 hover:bg-purple-500',
-    complete: 'bg-purple-700/30 border-purple-600/50 text-purple-300',
-  },
-  physical: {
-    badge: 'bg-green-900/60 text-green-300 border-green-700/50',
-    border: 'border-green-700/30',
-    glow: 'quest-card-physical',
-    accent: 'text-green-400',
-    button: 'bg-green-600 hover:bg-green-500',
-    complete: 'bg-green-700/30 border-green-600/50 text-green-300',
-  },
-  mental: {
-    badge: 'bg-cyan-900/60 text-cyan-300 border-cyan-700/50',
-    border: 'border-cyan-700/30',
-    glow: 'quest-card-mental',
-    accent: 'text-cyan-400',
-    button: 'bg-cyan-600 hover:bg-cyan-500',
-    complete: 'bg-cyan-700/30 border-cyan-600/50 text-cyan-300',
-  },
-  random: {
-    badge: 'bg-yellow-900/60 text-yellow-300 border-yellow-700/50',
-    border: 'border-yellow-700/30',
-    glow: 'quest-card-random',
-    accent: 'text-yellow-400',
-    button: 'bg-yellow-600 hover:bg-yellow-500',
-    complete: 'bg-yellow-700/30 border-yellow-600/50 text-yellow-300',
-  },
-}
-
-let _nextId = 100
-
-export function generateId() {
-  return `quest-${++_nextId}-${Date.now()}`
-}
-
-export const SEED_QUESTS = [
+export const dailyQuests = [
   {
-    id: 'sq-001',
-    title: 'Explore a New Trail',
-    description: 'Venture into the wilderness and discover a hiking trail you have never walked before. Document your journey with at least three photos.',
-    category: 'adventure',
-    difficulty: 4,
-    xp: 100,
-  },
-  {
-    id: 'sq-002',
-    title: 'Strike Up a Conversation',
-    description: 'Approach a stranger (safely and respectfully) and have a genuine conversation for at least 5 minutes. Learn their name and one interesting fact about them.',
-    category: 'social',
-    difficulty: 3,
-    xp: 75,
-  },
-  {
-    id: 'sq-003',
-    title: 'Draw Something from Memory',
-    description: 'Without looking at references, draw a detailed portrait of a place or person that is important to you. Take your time and add at least 10 details.',
-    category: 'creative',
-    difficulty: 2,
-    xp: 50,
-  },
-  {
-    id: 'sq-004',
-    title: 'Run 5K Without Stopping',
-    description: 'Lace up your boots, adventurer. Complete a 5-kilometer run at your own pace without taking a walking break. Track your time to beat it next time.',
-    category: 'physical',
-    difficulty: 3,
-    xp: 75,
-  },
-  {
-    id: 'sq-005',
-    title: 'Learn 20 Words in a New Language',
-    description: 'Pick any language you do not speak and memorize 20 useful words or phrases. Test yourself by writing them from memory at the end.',
-    category: 'mental',
-    difficulty: 2,
-    xp: 50,
-  },
-  {
-    id: 'sq-006',
-    title: 'Cook a Dish from Another Culture',
-    description: 'Pick a cuisine from a country you have never cooked from before. Source the ingredients, follow an authentic recipe, and eat your creation.',
-    category: 'adventure',
-    difficulty: 2,
-    xp: 50,
-  },
-  {
-    id: 'sq-007',
-    title: 'Host a Game Night',
-    description: 'Invite at least 3 friends or family members for a game night you organize. Prepare snacks, choose the games, and make it a memorable evening.',
-    category: 'social',
-    difficulty: 3,
-    xp: 75,
-  },
-  {
-    id: 'sq-008',
-    title: 'Write a Short Story',
-    description: 'Craft a complete short story of at least 500 words with a beginning, conflict, and resolution. No editing allowed — just write and finish it.',
-    category: 'creative',
-    difficulty: 4,
-    xp: 100,
-  },
-  {
-    id: 'sq-009',
-    title: 'Do 100 Push-Ups in a Day',
-    description: 'Complete 100 push-ups throughout the day. You can break them into sets — just make sure you hit the full 100 by midnight.',
-    category: 'physical',
-    difficulty: 3,
-    xp: 75,
-  },
-  {
-    id: 'sq-010',
-    title: 'Solve 10 Logic Puzzles',
-    description: 'Find a logic puzzle app, book, or website and work through 10 puzzles of increasing difficulty. No hints allowed on the last 3.',
-    category: 'mental',
-    difficulty: 4,
-    xp: 100,
-  },
-  {
-    id: 'sq-011',
-    title: 'The Mystery Errand',
-    description: 'Roll a die (or use random.org): 1-2 = go to a coffee shop you have never visited; 3-4 = visit a local museum or gallery; 5-6 = explore a part of your city you have never been to.',
-    category: 'random',
+    id: 'd1',
+    title: 'Hydration Hero',
+    description: 'Drink 8 glasses of water throughout the day. Your body will thank you.',
     difficulty: 1,
     xp: 25,
+    category: '💧',
+    type: 'daily',
   },
   {
-    id: 'sq-012',
-    title: 'Summit a Local Peak',
-    description: 'Find the highest natural point accessible within 50 km of where you live and reach the top. Mark the achievement and enjoy the view.',
-    category: 'adventure',
-    difficulty: 5,
-    xp: 125,
+    id: 'd2',
+    title: 'Mindful Steps',
+    description: 'Take a brisk 15-minute walk outside. Notice three things you haven\'t seen before.',
+    difficulty: 1,
+    xp: 30,
+    category: '🚶',
+    type: 'daily',
+  },
+  {
+    id: 'd3',
+    title: 'Connection Quest',
+    description: 'Call or video-chat a friend or family member you haven\'t spoken to in a while.',
+    difficulty: 2,
+    xp: 35,
+    category: '📞',
+    type: 'daily',
+  },
+  {
+    id: 'd4',
+    title: 'Gratitude Scroll',
+    description: 'Write down 3 things you\'re genuinely grateful for today. Be specific.',
+    difficulty: 1,
+    xp: 25,
+    category: '📝',
+    type: 'daily',
+  },
+  {
+    id: 'd5',
+    title: 'Push-Up Pledge',
+    description: 'Complete 20 push-ups — spread throughout the day or all at once.',
+    difficulty: 2,
+    xp: 40,
+    category: '💪',
+    type: 'daily',
+  },
+  {
+    id: 'd6',
+    title: 'Home Chef',
+    description: 'Cook a meal at home instead of ordering delivery. Extra XP for trying something new.',
+    difficulty: 2,
+    xp: 35,
+    category: '🍳',
+    type: 'daily',
+  },
+  {
+    id: 'd7',
+    title: 'Page Turner',
+    description: 'Read for 20 uninterrupted minutes. No phone, no distractions.',
+    difficulty: 1,
+    xp: 30,
+    category: '📚',
+    type: 'daily',
+  },
+  {
+    id: 'd8',
+    title: 'Still Mind',
+    description: 'Meditate or sit in silence for 5 minutes. Focus on your breathing.',
+    difficulty: 1,
+    xp: 25,
+    category: '🧘',
+    type: 'daily',
+  },
+  {
+    id: 'd9',
+    title: 'Tidy Domain',
+    description: 'Clean and organize one room or area of your living space completely.',
+    difficulty: 2,
+    xp: 40,
+    category: '🧹',
+    type: 'daily',
+  },
+  {
+    id: 'd10',
+    title: 'Word of the Day',
+    description: 'Learn one new word — look up its meaning, origin, and use it in a sentence.',
+    difficulty: 1,
+    xp: 25,
+    category: '📖',
+    type: 'daily',
   },
 ]
+
+export const weeklyQuests = [
+  {
+    id: 'w1',
+    title: 'Road Runner',
+    description: 'Run or walk a combined total of 10km this week. Track your progress daily.',
+    difficulty: 3,
+    xp: 100,
+    category: '🏃',
+    type: 'weekly',
+  },
+  {
+    id: 'w2',
+    title: 'Meal Prep Master',
+    description: 'Cook 5 meals at home this week. Plan your meals in advance for bonus discipline.',
+    difficulty: 3,
+    xp: 90,
+    category: '🥗',
+    type: 'weekly',
+  },
+  {
+    id: 'w3',
+    title: 'Chapter Champion',
+    description: 'Read a full chapter of a non-fiction book this week. Take notes on key insights.',
+    difficulty: 3,
+    xp: 85,
+    category: '📚',
+    type: 'weekly',
+  },
+  {
+    id: 'w4',
+    title: 'Iron Will',
+    description: 'Complete 3 dedicated gym or workout sessions this week. Log each one.',
+    difficulty: 4,
+    xp: 130,
+    category: '🏋️',
+    type: 'weekly',
+  },
+  {
+    id: 'w5',
+    title: 'Creative Spark',
+    description: 'Start and complete a creative project — draw, write, build, or craft something.',
+    difficulty: 4,
+    xp: 120,
+    category: '🎨',
+    type: 'weekly',
+  },
+  {
+    id: 'w6',
+    title: 'Give Back',
+    description: 'Volunteer for at least 2 hours at a local org or help someone in your community.',
+    difficulty: 3,
+    xp: 150,
+    category: '🤝',
+    type: 'weekly',
+  },
+  {
+    id: 'w7',
+    title: 'Digital Detox Day',
+    description: 'Spend an entire day without social media. Replace with real-world activities.',
+    difficulty: 4,
+    xp: 110,
+    category: '📵',
+    type: 'weekly',
+  },
+  {
+    id: 'w8',
+    title: 'Solo Diner',
+    description: 'Visit a restaurant you\'ve never been to — alone. Embrace the independence.',
+    difficulty: 3,
+    xp: 95,
+    category: '🍽️',
+    type: 'weekly',
+  },
+]
+
+export const monthlyQuests = [
+  {
+    id: 'm1',
+    title: 'Summit Seeker',
+    description: 'Hike a mountain, peak, or significant trail. Reach the top and document it.',
+    difficulty: 5,
+    xp: 350,
+    category: '⛰️',
+    type: 'monthly',
+  },
+  {
+    id: 'm2',
+    title: 'Solo Expedition',
+    description: 'Take a solo day trip to somewhere you\'ve never been before. Explore without a plan.',
+    difficulty: 5,
+    xp: 300,
+    category: '🗺️',
+    type: 'monthly',
+  },
+  {
+    id: 'm3',
+    title: '30-Day Challenger',
+    description: 'Complete any 30-day challenge — fitness, learning, creativity, or habit-building.',
+    difficulty: 5,
+    xp: 400,
+    category: '🏆',
+    type: 'monthly',
+  },
+  {
+    id: 'm4',
+    title: 'Skill Unlocked',
+    description: 'Learn the basics of a new skill this month — an instrument, language, or craft.',
+    difficulty: 5,
+    xp: 275,
+    category: '🎓',
+    type: 'monthly',
+  },
+  {
+    id: 'm5',
+    title: 'Community Architect',
+    description: 'Organize a community event — a cleanup, game night, potluck, or meetup.',
+    difficulty: 5,
+    xp: 380,
+    category: '🏡',
+    type: 'monthly',
+  },
+  {
+    id: 'm6',
+    title: 'Full Detox Weekend',
+    description: 'Spend an entire weekend offline — no internet, no screens. Journal the experience.',
+    difficulty: 5,
+    xp: 320,
+    category: '🌿',
+    type: 'monthly',
+  },
+]
+
+// Helper to get quests by ids
+export function getQuestsByIds(ids) {
+  const all = [...dailyQuests, ...weeklyQuests, ...monthlyQuests]
+  return ids.map(id => all.find(q => q.id === id)).filter(Boolean)
+}
+
+// Pick N random quests from a pool, excluding recently completed ones
+export function pickRandom(pool, count, excludeIds = []) {
+  const available = pool.filter(q => !excludeIds.includes(q.id))
+  const source = available.length >= count ? available : pool
+  const shuffled = [...source].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, count).map(q => q.id)
+}

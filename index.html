@@ -1,112 +1,230 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Side Quest — RPG Quest Board</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              navy: {
-                950: '#0f172a',
-                900: '#0d1b2e',
-                800: '#1e293b',
-                700: '#253347',
-                600: '#334155',
-              },
-              gold: {
-                300: '#fcd34d',
-                400: '#fbbf24',
-                500: '#f59e0b',
-                600: '#d97706',
-              },
-              quest: {
-                adventure: '#f97316',
-                social: '#ec4899',
-                creative: '#8b5cf6',
-                physical: '#22c55e',
-                mental: '#06b6d4',
-                random: '#f59e0b',
-              }
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Side Quest V2</title>
+
+  <!-- Tailwind CSS CDN with extended config -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              900: '#0f172a',
+              950: '#080f1e',
+              800: '#1e293b',
+              700: '#253348',
             },
-            animation: {
-              'glow-pulse': 'glow-pulse 2s ease-in-out infinite',
-              'xp-fill': 'xp-fill 0.6s ease-out',
-              'level-up': 'level-up 0.5s ease-out',
-              'fade-in': 'fade-in 0.3s ease-out',
-              'slide-up': 'slide-up 0.4s ease-out',
+            gold: {
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
             },
-            keyframes: {
-              'glow-pulse': {
-                '0%, 100%': { boxShadow: '0 0 5px currentColor' },
-                '50%': { boxShadow: '0 0 20px currentColor, 0 0 40px currentColor' },
-              },
-              'xp-fill': {
-                from: { width: '0%' },
-              },
-              'level-up': {
-                '0%': { transform: 'scale(0.8)', opacity: '0' },
-                '60%': { transform: 'scale(1.1)' },
-                '100%': { transform: 'scale(1)', opacity: '1' },
-              },
-              'fade-in': {
-                from: { opacity: '0' },
-                to: { opacity: '1' },
-              },
-              'slide-up': {
-                from: { transform: 'translateY(30px)', opacity: '0' },
-                to: { transform: 'translateY(0)', opacity: '1' },
-              },
+          },
+          keyframes: {
+            shimmer: {
+              '0%': { backgroundPosition: '-200% center' },
+              '100%': { backgroundPosition: '200% center' },
             },
-          }
-        }
-      }
-    </script>
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        background-color: #0f172a;
-        color: #e2e8f0;
-        font-family: 'Segoe UI', system-ui, sans-serif;
-        min-height: 100vh;
-      }
-      ::-webkit-scrollbar { width: 8px; }
-      ::-webkit-scrollbar-track { background: #1e293b; }
-      ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-      ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+            levelup: {
+              '0%': { transform: 'scale(0.5)', opacity: '0' },
+              '60%': { transform: 'scale(1.1)', opacity: '1' },
+              '100%': { transform: 'scale(1)', opacity: '1' },
+            },
+            pulse_glow: {
+              '0%, 100%': { boxShadow: '0 0 8px 2px rgba(245,158,11,0.3)' },
+              '50%': { boxShadow: '0 0 20px 6px rgba(245,158,11,0.7)' },
+            },
+            xpfill: {
+              '0%': { width: '0%' },
+            },
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(-8px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+          animation: {
+            shimmer: 'shimmer 3s linear infinite',
+            levelup: 'levelup 0.5s ease-out forwards',
+            pulse_glow: 'pulse_glow 2s ease-in-out infinite',
+            xpfill: 'xpfill 1s ease-out forwards',
+            fadeIn: 'fadeIn 0.3s ease-out forwards',
+          },
+        },
+      },
+    }
+  </script>
 
-      .quest-card-adventure:hover { box-shadow: 0 0 20px rgba(249,115,22,0.4), 0 0 40px rgba(249,115,22,0.15); }
-      .quest-card-social:hover    { box-shadow: 0 0 20px rgba(236,72,153,0.4), 0 0 40px rgba(236,72,153,0.15); }
-      .quest-card-creative:hover  { box-shadow: 0 0 20px rgba(139,92,246,0.4), 0 0 40px rgba(139,92,246,0.15); }
-      .quest-card-physical:hover  { box-shadow: 0 0 20px rgba(34,197,94,0.4),  0 0 40px rgba(34,197,94,0.15); }
-      .quest-card-mental:hover    { box-shadow: 0 0 20px rgba(6,182,212,0.4),  0 0 40px rgba(6,182,212,0.15); }
-      .quest-card-random:hover    { box-shadow: 0 0 20px rgba(245,158,11,0.4), 0 0 40px rgba(245,158,11,0.15); }
+  <style>
+    /* Base dark background */
+    body {
+      background-color: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
 
-      .xp-bar-fill { transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #f59e0b;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d97706;
+    }
 
-      @keyframes shimmer {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
-      }
-      .gold-shimmer {
-        background: linear-gradient(90deg, #f59e0b, #fcd34d, #f59e0b, #d97706, #f59e0b);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: shimmer 3s linear infinite;
-      }
+    /* Gold shimmer text */
+    .gold-shimmer {
+      background: linear-gradient(
+        90deg,
+        #f59e0b 0%,
+        #fcd34d 30%,
+        #f59e0b 50%,
+        #fcd34d 70%,
+        #f59e0b 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
 
-      .star-filled { color: #f59e0b; }
-      .star-empty  { color: #475569; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+    /* Quest card hover glow */
+    .quest-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .quest-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.15);
+    }
+    .quest-card.completed {
+      opacity: 0.55;
+      filter: grayscale(40%);
+    }
+
+    /* XP bar animation */
+    .xp-bar-fill {
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(90deg, #d97706, #f59e0b, #fcd34d);
+    }
+
+    /* Stat bar */
+    .stat-bar-fill {
+      background: linear-gradient(90deg, #7c3aed, #a855f7);
+      transition: width 0.6s ease;
+    }
+
+    /* Class-themed glow helpers */
+    .glow-bard    { box-shadow: 0 0 16px 3px rgba(236, 72, 153, 0.4); }
+    .glow-mage    { box-shadow: 0 0 16px 3px rgba(139, 92, 246, 0.4); }
+    .glow-ranger  { box-shadow: 0 0 16px 3px rgba(34, 197, 94, 0.4); }
+    .glow-warrior { box-shadow: 0 0 16px 3px rgba(239, 68, 68, 0.4); }
+    .glow-rogue   { box-shadow: 0 0 16px 3px rgba(59, 130, 246, 0.4); }
+    .glow-adventurer { box-shadow: 0 0 16px 3px rgba(245, 158, 11, 0.4); }
+
+    /* Modal backdrop */
+    .modal-backdrop {
+      backdrop-filter: blur(4px);
+      background: rgba(8, 15, 30, 0.85);
+    }
+
+    /* Difficulty stars */
+    .diff-star { color: #f59e0b; }
+    .diff-star.empty { color: #334155; }
+
+    /* Completed check badge */
+    .completed-badge {
+      background: linear-gradient(135deg, #059669, #34d399);
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    /* Nav link active */
+    .nav-link-active {
+      color: #f59e0b;
+      border-bottom: 2px solid #f59e0b;
+    }
+
+    /* Onboarding step indicator */
+    .step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #334155;
+      transition: background 0.2s;
+    }
+    .step-dot.active {
+      background: #f59e0b;
+    }
+    .step-dot.done {
+      background: #059669;
+    }
+
+    /* Interest checkbox */
+    .interest-chip {
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .interest-chip:hover {
+      border-color: #f59e0b;
+    }
+    .interest-chip.selected {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #f59e0b;
+      color: #fcd34d;
+    }
+
+    /* Personality button */
+    .personality-btn {
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .personality-btn:hover {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .personality-btn.selected {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fcd34d;
+    }
+
+    /* Leaderboard row highlight */
+    .lb-self {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.12), rgba(245, 158, 11, 0.06));
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    /* Level up modal animation */
+    .levelup-modal {
+      animation: levelup 0.5s ease-out forwards;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
 </html>

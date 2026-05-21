@@ -1,46 +1,65 @@
-import React from 'react'
-import { usePlayer } from '../context/PlayerContext'
+import React, { useEffect } from 'react'
+import { useApp } from '../context/AppContext'
 
 export default function LevelUpModal() {
-  const { showLevelUp, level, dismissLevelUp } = usePlayer()
+  const { state, dispatch } = useApp()
+  const { showLevelUp, newLevel, rpgClass, level } = state
+
+  const displayLevel = newLevel || level
+
+  useEffect(() => {
+    if (showLevelUp) {
+      const t = setTimeout(() => dispatch({ type: 'DISMISS_LEVEL_UP' }), 5000)
+      return () => clearTimeout(t)
+    }
+  }, [showLevelUp, dispatch])
 
   if (!showLevelUp) return null
 
+  const glowClass = rpgClass?.glowClass || 'glow-adventurer'
+  const emoji = rpgClass?.emoji || '🌟'
+  const textColor = rpgClass?.textColor || 'text-amber-400'
+
+  function handleDismiss() {
+    dispatch({ type: 'DISMISS_LEVEL_UP' })
+  }
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.75)' }}
-      onClick={dismissLevelUp}
+      className="fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4"
+      onClick={handleDismiss}
     >
       <div
-        className="relative bg-slate-900 border-2 border-amber-500/60 rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl animate-slide-up"
-        style={{ boxShadow: '0 0 60px rgba(245,158,11,0.3), 0 0 120px rgba(245,158,11,0.1)' }}
+        className={`levelup-modal bg-slate-800 border border-slate-600 rounded-2xl p-8 max-w-sm w-full text-center ${glowClass}`}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Stars */}
-        <div className="text-5xl mb-2 animate-bounce">⭐</div>
-        <div className="flex justify-center gap-2 mb-4">
-          {['✨','🌟','✨'].map((s, i) => (
-            <span key={i} className="text-2xl" style={{ animationDelay: `${i * 0.1}s` }}>{s}</span>
-          ))}
+        <div className="text-7xl mb-4 animate-bounce">{emoji}</div>
+
+        <div className="gold-shimmer text-4xl font-black tracking-widest uppercase mb-2">
+          Level Up!
         </div>
 
-        <h2 className="text-3xl font-bold gold-shimmer mb-1">Level Up!</h2>
-        <p className="text-slate-400 text-sm mb-4">You have reached</p>
-        <div className="bg-violet-900/50 border border-violet-600/50 rounded-xl py-4 px-6 mb-6 inline-block">
-          <span className="text-5xl font-black text-white">{level}</span>
-          <p className="text-violet-300 text-xs font-semibold uppercase tracking-widest mt-1">Level</p>
-        </div>
+        <div className="text-6xl font-black text-white mb-3">{displayLevel}</div>
 
-        <p className="text-slate-400 text-sm mb-6">
-          Keep completing quests to grow stronger, adventurer!
+        <p className={`text-sm font-semibold ${textColor} mb-2`}>
+          {rpgClass ? `${rpgClass.name} powers grow stronger!` : 'Your power grows!'}
         </p>
 
+        <p className="text-slate-400 text-xs mb-6">
+          Keep completing quests to reach new heights.
+        </p>
+
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px bg-slate-600" />
+          <span className="text-amber-500 text-lg">⚔️</span>
+          <div className="flex-1 h-px bg-slate-600" />
+        </div>
+
         <button
-          onClick={dismissLevelUp}
-          className="w-full py-3 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-xl transition-colors text-sm uppercase tracking-wide"
+          onClick={handleDismiss}
+          className="w-full bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold py-3 px-6 rounded-xl text-sm transition-colors duration-150"
         >
-          Onward! ⚔️
+          Onward! ⚡
         </button>
       </div>
     </div>
