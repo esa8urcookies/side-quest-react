@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useApp, BADGES, calculateLevel } from '../context/AppContext'
-import regions from '../data/regions'
+import { COUNTRIES, COUNTRY_TO_REGION } from '../data/regions'
 
 const INTERESTS_OPTIONS = [
   { key: 'outdoors', label: 'Outdoors', emoji: '🌲' },
@@ -10,6 +10,38 @@ const INTERESTS_OPTIONS = [
   { key: 'travel', label: 'Travel', emoji: '✈️' },
   { key: 'fitness', label: 'Fitness', emoji: '💪' },
 ]
+
+const HOBBIES_OPTIONS = [
+  { key: 'gaming', label: 'Gaming', emoji: '🎮' },
+  { key: 'music', label: 'Music', emoji: '🎵' },
+  { key: 'cooking', label: 'Cooking', emoji: '🍳' },
+  { key: 'movies', label: 'Movies', emoji: '🎬' },
+  { key: 'photography', label: 'Photography', emoji: '📸' },
+  { key: 'art', label: 'Art & Drawing', emoji: '🖌️' },
+  { key: 'writing', label: 'Writing', emoji: '✍️' },
+  { key: 'dancing', label: 'Dancing', emoji: '💃' },
+  { key: 'hiking', label: 'Hiking', emoji: '🥾' },
+  { key: 'reading', label: 'Reading', emoji: '📚' },
+  { key: 'coding', label: 'Coding', emoji: '💻' },
+  { key: 'fashion', label: 'Fashion', emoji: '👗' },
+]
+
+const SPORTS_OPTIONS = [
+  { key: 'football', label: 'Football / Soccer', emoji: '⚽' },
+  { key: 'basketball', label: 'Basketball', emoji: '🏀' },
+  { key: 'american_football', label: 'American Football', emoji: '🏈' },
+  { key: 'baseball', label: 'Baseball', emoji: '⚾' },
+  { key: 'tennis', label: 'Tennis', emoji: '🎾' },
+  { key: 'cricket', label: 'Cricket', emoji: '🏏' },
+  { key: 'swimming', label: 'Swimming', emoji: '🏊' },
+  { key: 'running', label: 'Running', emoji: '🏃' },
+  { key: 'cycling', label: 'Cycling', emoji: '🚴' },
+  { key: 'mma', label: 'MMA / Boxing', emoji: '🥊' },
+  { key: 'volleyball', label: 'Volleyball', emoji: '🏐' },
+  { key: 'golf', label: 'Golf', emoji: '⛳' },
+]
+
+const RELIGIONS = ['Prefer not to say','No religion / Atheist','Christian','Muslim','Hindu','Buddhist','Jewish','Sikh','Other']
 
 const STAT_LABELS = { str: 'STR', dex: 'DEX', int: 'INT', cha: 'CHA', wis: 'WIS' }
 const STAT_COLORS = {
@@ -57,16 +89,18 @@ export default function Profile() {
 
   // Edit form state
   const [editName, setEditName] = useState(playerName)
-  const [editRegion, setEditRegion] = useState(region)
+  const [editCountry, setEditCountry] = useState(profile?.country || '')
   const [editPersonality, setEditPersonality] = useState(profile?.personality || null)
   const [editFitness, setEditFitness] = useState(profile?.fitnessLevel || null)
   const [editInterests, setEditInterests] = useState(profile?.interests || [])
+  const [editHobbies, setEditHobbies] = useState(profile?.hobbies || [])
+  const [editSports, setEditSports] = useState(profile?.favoriteSports || [])
+  const [editSportsTeam, setEditSportsTeam] = useState(profile?.sportsTeam || '')
+  const [editReligion, setEditReligion] = useState(profile?.religion || 'Prefer not to say')
   const [saved, setSaved] = useState(false)
 
-  function toggleInterest(key) {
-    setEditInterests(prev =>
-      prev.includes(key) ? prev.filter(i => i !== key) : [...prev, key]
-    )
+  function toggle(setter) {
+    return (key) => setter(prev => prev.includes(key) ? prev.filter(i => i !== key) : [...prev, key])
   }
 
   function handleSave() {
@@ -75,13 +109,19 @@ export default function Profile() {
       personality: editPersonality,
       fitnessLevel: editFitness,
       interests: editInterests,
+      hobbies: editHobbies,
+      favoriteSports: editSports,
+      sportsTeam: editSportsTeam,
+      religion: editReligion,
+      country: editCountry,
     }
+    const newRegion = COUNTRY_TO_REGION[editCountry] || region
     dispatch({
       type: 'UPDATE_PROFILE',
       payload: {
         profile: newProfile,
         playerName: editName || playerName,
-        region: editRegion,
+        region: newRegion,
       },
     })
     setSaved(true)
@@ -169,6 +209,59 @@ export default function Profile() {
             Complete quests to earn badges! 🏅
           </div>
         )}
+
+        {/* Personal Details */}
+        {(profile?.country || profile?.sportsTeam || (profile?.favoriteSports?.length > 0) || (profile?.hobbies?.length > 0)) && (
+          <div className="mt-4 pt-4 border-t border-slate-700">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">About You</div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              {profile?.country && (
+                <div className="bg-slate-700/50 rounded-lg p-2.5">
+                  <div className="text-slate-500 mb-0.5">Country</div>
+                  <div className="text-slate-200 font-semibold">🌍 {profile.country}</div>
+                </div>
+              )}
+              {profile?.religion && profile.religion !== 'Prefer not to say' && (
+                <div className="bg-slate-700/50 rounded-lg p-2.5">
+                  <div className="text-slate-500 mb-0.5">Belief</div>
+                  <div className="text-slate-200 font-semibold">🙏 {profile.religion}</div>
+                </div>
+              )}
+              {profile?.sportsTeam && (
+                <div className="bg-slate-700/50 rounded-lg p-2.5">
+                  <div className="text-slate-500 mb-0.5">Sports Team</div>
+                  <div className="text-slate-200 font-semibold">🏆 {profile.sportsTeam}</div>
+                </div>
+              )}
+              {profile?.favoriteSports?.length > 0 && (
+                <div className="bg-slate-700/50 rounded-lg p-2.5 col-span-2">
+                  <div className="text-slate-500 mb-1">Sports</div>
+                  <div className="flex flex-wrap gap-1">
+                    {profile.favoriteSports.map(s => {
+                      const opt = SPORTS_OPTIONS.find(o => o.key === s)
+                      return opt ? (
+                        <span key={s} className="bg-slate-600 text-slate-300 px-2 py-0.5 rounded-full text-xs">{opt.emoji} {opt.label}</span>
+                      ) : null
+                    })}
+                  </div>
+                </div>
+              )}
+              {profile?.hobbies?.length > 0 && (
+                <div className="bg-slate-700/50 rounded-lg p-2.5 col-span-2">
+                  <div className="text-slate-500 mb-1">Hobbies</div>
+                  <div className="flex flex-wrap gap-1">
+                    {profile.hobbies.map(h => {
+                      const opt = HOBBIES_OPTIONS.find(o => o.key === h)
+                      return opt ? (
+                        <span key={h} className="bg-slate-600 text-slate-300 px-2 py-0.5 rounded-full text-xs">{opt.emoji} {opt.label}</span>
+                      ) : null
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ── Edit Profile ────────────────────────────────────── */}
@@ -187,16 +280,14 @@ export default function Profile() {
           />
         </div>
 
-        {/* Region */}
+        {/* Country */}
         <div className="mb-4">
-          <label className="text-sm font-semibold text-slate-300 block mb-1.5">Region</label>
-          <select
-            value={editRegion}
-            onChange={e => setEditRegion(e.target.value)}
-            className="w-full"
-          >
-            {regions.map(r => <option key={r} value={r}>{r}</option>)}
+          <label className="text-sm font-semibold text-slate-300 block mb-1.5">Country</label>
+          <select value={editCountry} onChange={e => setEditCountry(e.target.value)} className="w-full">
+            <option value="">Select country…</option>
+            {COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
+          {editCountry && <p className="text-xs text-slate-500 mt-1">Region: {COUNTRY_TO_REGION[editCountry] || '—'}</p>}
         </div>
 
         {/* Personality */}
@@ -246,19 +337,59 @@ export default function Profile() {
         </div>
 
         {/* Interests */}
-        <div className="mb-5">
-          <label className="text-sm font-semibold text-slate-300 block mb-2">Interests</label>
+        <div className="mb-4">
+          <label className="text-sm font-semibold text-slate-300 block mb-2">Life Interests</label>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {INTERESTS_OPTIONS.map(i => (
-              <button
-                key={i.key}
-                onClick={() => toggleInterest(i.key)}
-                className={`interest-chip border rounded-lg py-2 px-3 flex items-center gap-2 text-sm ${
-                  editInterests.includes(i.key) ? 'selected border-amber-500' : 'border-slate-600 text-slate-400'
-                }`}
-              >
-                <span>{i.emoji}</span>
-                <span className="font-semibold">{i.label}</span>
+              <button key={i.key} onClick={() => toggle(setEditInterests)(i.key)}
+                className={`interest-chip border rounded-lg py-2 px-3 flex items-center gap-2 text-sm ${editInterests.includes(i.key) ? 'selected border-amber-500' : 'border-slate-600 text-slate-400'}`}>
+                <span>{i.emoji}</span><span className="font-semibold">{i.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Hobbies */}
+        <div className="mb-4">
+          <label className="text-sm font-semibold text-slate-300 block mb-2">Hobbies</label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {HOBBIES_OPTIONS.map(i => (
+              <button key={i.key} onClick={() => toggle(setEditHobbies)(i.key)}
+                className={`interest-chip border rounded-lg py-2 px-3 flex items-center gap-2 text-sm ${editHobbies.includes(i.key) ? 'selected border-amber-500' : 'border-slate-600 text-slate-400'}`}>
+                <span>{i.emoji}</span><span className="font-semibold text-xs">{i.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Favourite Sports */}
+        <div className="mb-4">
+          <label className="text-sm font-semibold text-slate-300 block mb-2">Favourite Sports</label>
+          <div className="grid grid-cols-2 gap-2">
+            {SPORTS_OPTIONS.map(i => (
+              <button key={i.key} onClick={() => toggle(setEditSports)(i.key)}
+                className={`interest-chip border rounded-lg py-2 px-3 flex items-center gap-2 text-sm ${editSports.includes(i.key) ? 'selected border-amber-500' : 'border-slate-600 text-slate-400'}`}>
+                <span>{i.emoji}</span><span className="font-semibold text-xs">{i.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Sports Team */}
+        <div className="mb-4">
+          <label className="text-sm font-semibold text-slate-300 block mb-1.5">Favourite Sports Team</label>
+          <input type="text" value={editSportsTeam} onChange={e => setEditSportsTeam(e.target.value)}
+            placeholder="e.g. Real Madrid, Lakers, All Blacks…" maxLength={40} className="w-full" />
+        </div>
+
+        {/* Religion */}
+        <div className="mb-5">
+          <label className="text-sm font-semibold text-slate-300 block mb-2">Religion / Belief</label>
+          <div className="grid grid-cols-1 gap-1.5">
+            {RELIGIONS.map(r => (
+              <button key={r} onClick={() => setEditReligion(r)}
+                className={`personality-btn border rounded-lg py-2 px-4 text-sm font-medium text-left ${editReligion === r ? 'selected border-amber-500 bg-amber-500/10 text-amber-300' : 'border-slate-600 text-slate-400'}`}>
+                {r}
               </button>
             ))}
           </div>
